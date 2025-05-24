@@ -59,7 +59,7 @@ async function getAIResponse(userMessage) {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": "Bearer gsk_FREE_API_KEY_PLACEHOLDER"
+                "Authorization": "Bearer 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"
             },
             body: JSON.stringify({
                 model: "llama3-8b-8192",
