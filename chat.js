@@ -23,7 +23,8 @@ async function getAIResponse(userMessage) {
   const response = await fetch("https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-alpha", {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      "Authorization": "Bearer hf_hf_aXvUwXPLurzqzieDweCvbndhAgPtfDREDp"
     },
     body: JSON.stringify({
       inputs: userMessage
@@ -42,3 +43,4 @@ async function getAIResponse(userMessage) {
     return "Sorry, I can't answer that!";
   }
 }
+
