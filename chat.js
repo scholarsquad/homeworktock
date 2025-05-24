@@ -24,7 +24,7 @@ async function getAIResponse(userMessage) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": "Bearer hf_hf_aXvUwXPLurzqzieDweCvbndhAgPtfDREDp"
+      "Authorization": "Bearer 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"
     },
     body: JSON.stringify({
       inputs: userMessage
