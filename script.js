@@ -4,7 +4,7 @@ const sendBtn = document.getElementById('send-btn');
 
 // Set your Groq API endpoint and API key
 const GROQ_API_ENDPOINT = 'https://api.groq.com/v1/models/LLaMA/completions';
-const GROQ_API_KEY = 'YOUR_API_KEY_HERE'; // Replace with your actual API key
+const GROQ_API_KEY = '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'; // Replace with your actual API key
 
 // Send a message to the Groq API and display the response
 sendBtn.addEventListener('click', async () => {
