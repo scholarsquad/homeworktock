@@ -1,1 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My AI Chat</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+    #chat-container { max-width: 600px; margin: 50px auto; padding: 10px; border: 1px solid #ddd; border-radius: 8px; }
+    .message { margin: 10px 0; }
+    .user { color: #007BFF; }
+    .bot { color: #28A745; }
+  </style>
+</head>
+<body>
+  <div id="chat-container">
+    <h3>Chat with AI</h3>
+    <div id="chat-box"></div>
+    <input type="text" id="user-input" placeholder="Type your message..." />
+    <button onclick="sendMessage()">Send</button>
+  </div>
+
+  <script src="chat.js"></script>
+</body>
+</html>
 
