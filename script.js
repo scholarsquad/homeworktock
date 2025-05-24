@@ -1,7 +1,7 @@
 class AIChat {
     constructor() {
         this.apiToken = null;
-        this.apiUrl = 'https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium';
+        this.apiUrl = 'https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill';
         this.conversationHistory = [];
         this.initializeElements();
         this.setupEventListeners();
@@ -101,13 +101,6 @@ class AIChat {
     }
 
     async callAPI(message) {
-        // Add to conversation history
-        this.conversationHistory.push({
-            past_user_inputs: this.conversationHistory.map(c => c.user).slice(-5), // Keep last 5 exchanges
-            generated_responses: this.conversationHistory.map(c => c.bot).slice(-5),
-            text: message
-        });
-
         const response = await fetch(this.apiUrl, {
             method: 'POST',
             headers: {
@@ -115,16 +108,12 @@ class AIChat {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                inputs: {
-                    past_user_inputs: this.conversationHistory.slice(-1)[0]?.past_user_inputs || [],
-                    generated_responses: this.conversationHistory.slice(-1)[0]?.generated_responses || [],
-                    text: message
-                },
+                inputs: message,
                 parameters: {
-                    max_length: 1000,
-                    min_length: 1,
+                    max_length: 200,
+                    min_length: 10,
                     do_sample: true,
-                    temperature: 0.8,
+                    temperature: 0.7,
                     top_p: 0.9,
                     repetition_penalty: 1.2
                 }
@@ -136,6 +125,8 @@ class AIChat {
                 throw new Error('Invalid API token. Please check your Hugging Face token.');
             } else if (response.status === 503) {
                 throw new Error('Model is loading. Please try again in a moment.');
+            } else if (response.status === 404) {
+                throw new Error('Model not found. The AI model may be unavailable.');
             } else {
                 throw new Error(`API request failed with status ${response.status}`);
             }
@@ -144,19 +135,19 @@ class AIChat {
         const data = await response.json();
         
         let botResponse;
-        if (data.generated_text) {
+        if (Array.isArray(data) && data.length > 0) {
+            botResponse = data[0].generated_text || data[0].text || "I couldn't generate a response.";
+        } else if (data.generated_text) {
             botResponse = data.generated_text;
-        } else if (data.conversation && data.conversation.generated_responses) {
-            botResponse = data.conversation.generated_responses[data.conversation.generated_responses.length - 1];
         } else {
             botResponse = "I'm sorry, I couldn't generate a response. Please try again.";
         }
 
-        // Update conversation history
-        this.conversationHistory[this.conversationHistory.length - 1] = {
+        // Store in conversation history
+        this.conversationHistory.push({
             user: message,
             bot: botResponse
-        };
+        });
 
         return botResponse;
     }
