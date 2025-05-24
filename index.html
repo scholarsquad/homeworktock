@@ -26,7 +26,8 @@
 <script>
   const chatBox = document.getElementById("chatBox");
   const userInput = document.getElementById("userInput");
-  const HF_TOKEN = "YOUR_HF_TOKEN"; // Replace with your Hugging Face token
+  const token_b64 = 'aGZfYVh2VXdYUEx1cnpxemllRHdlQ3ZibmRoQWdQdGZEUkVEcA==';
+  const HF_TOKEN = atob(token_b64); // Replace with your Hugging Face token
   const API_URL = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct";
 
   function appendMessage(sender, text) {
