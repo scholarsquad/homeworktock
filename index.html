@@ -1,39 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Chat</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Groq Chat</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>AI Chat Assistant</h1>
-            <p>Powered by Hugging Face</p>
-        </header>
-        
-        <div class="chat-container">
-            <div id="messages" class="messages"></div>
-            <div class="input-container">
-                <input type="text" id="messageInput" placeholder="Type your message..." disabled>
-                <button id="sendBtn" disabled>Send</button>
-            </div>
-        </div>
-        
-        <div class="setup-container" id="setupContainer">
-            <div class="setup-box">
-                <h3>Setup Required</h3>
-                <p>Enter your free Hugging Face API token to start chatting:</p>
-                <input type="password" id="apiToken" placeholder="hf_...">
-                <button id="saveToken">Save Token</button>
-                <p class="help-text">
-                    Get your free token at <a href="https://huggingface.co/settings/tokens" target="_blank">huggingface.co/settings/tokens</a>
-                </p>
-            </div>
-        </div>
-    </div>
-    
-    <script src="script.js"></script>
+  <div class="chat-container">
+    <div id="chat-log"></div>
+    <input id="user-input" type="text" placeholder="Type a message...">
+    <button id="send-btn">Send</button>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
+```
+### `styles.css`
+```css
+body {
+  font-family: Arial, sans-serif;
+}
+
+.chat-container {
+  width: 500px;
+  height: 600px;
+  border: 1px solid #ccc;
+  padding: 20px;
+  margin: 40px auto;
+}
+
+#chat-log {
+  padding: 20px;
+  overflow-y: auto;
+  max-height: 400px;
+}
+
+#user-input {
+  width: 80%;
+  padding: 10px;
+  font-size: 16px;
+}
+
+#send-btn {
+  width: 20%;
+  padding: 10px;
+  font-size: 16px;
+  background-color: #4CAF50;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+#send-btn:hover {
+  background-color: #3e8e41;
+}
