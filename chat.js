@@ -41,23 +41,69 @@ function removeMessage(messageId) {
 
 async function getAIResponse(userMessage) {
     try {
-        // Format the input properly for the Zephyr model
-        const formattedInput = `<|user|>\n${userMessage}</s>\n<|assistant|>\n`;
-        
-        const response = await fetch("https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-alpha", {
+        // Try DialoGPT first
+        const response = await fetch("https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": "Bearer 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"
             },
             body: JSON.stringify({
-                inputs: formattedInput,
+                inputs: {
+                    past_user_inputs: [],
+                    generated_responses: [],
+                    text: userMessage
+                },
                 parameters: {
-                    max_new_tokens: 250,
+                    max_length: 1000,
+                    min_length: 10,
                     temperature: 0.7,
-                    top_p: 0.95,
+                    do_sample: true
+                }
+            })
+        });
+
+        if (!response.ok) {
+            // If DialoGPT fails, try a simpler model
+            return await tryAlternativeModel(userMessage);
+        }
+
+        const data = await response.json();
+        console.log('API Response:', data); // For debugging
+        
+        if (data.generated_text) {
+            return data.generated_text.trim();
+        } else if (data.error) {
+            console.error('API Error:', data.error);
+            // Try alternative model if there's an error
+            return await tryAlternativeModel(userMessage);
+        }
+        
+        return "I'm not sure how to respond to that.";
+        
+    } catch (error) {
+        console.error('Request failed:', error);
+        // Try alternative model as fallback
+        return await tryAlternativeModel(userMessage);
+    }
+}
+
+async function tryAlternativeModel(userMessage) {
+    try {
+        // Fallback to a simpler, more reliable model
+        const response = await fetch("https://api-inference.huggingface.co/models/gpt2", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer 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"
+            },
+            body: JSON.stringify({
+                inputs: userMessage,
+                parameters: {
+                    max_length: 100,
+                    temperature: 0.8,
                     do_sample: true,
-                    return_full_text: false
+                    pad_token_id: 50256
                 }
             })
         });
@@ -67,40 +113,26 @@ async function getAIResponse(userMessage) {
         }
 
         const data = await response.json();
-        console.log('API Response:', data); // For debugging
+        console.log('Fallback API Response:', data);
         
-        // Handle different response formats
-        if (Array.isArray(data) && data.length > 0) {
-            if (data[0].generated_text) {
-                // Clean up the response by removing the input prompt
-                let generatedText = data[0].generated_text;
-                
-                // Remove the formatted input from the response if it's included
-                if (generatedText.includes(formattedInput)) {
-                    generatedText = generatedText.replace(formattedInput, '').trim();
-                }
-                
-                // Remove any remaining special tokens
-                generatedText = generatedText
-                    .replace(/<\|user\|>/g, '')
-                    .replace(/<\|assistant\|>/g, '')
-                    .replace(/<\/s>/g, '')
-                    .trim();
-                
-                return generatedText || "I'm not sure how to respond to that.";
+        if (Array.isArray(data) && data.length > 0 && data[0].generated_text) {
+            // Clean up the response - remove the original input if it's repeated
+            let generatedText = data[0].generated_text;
+            if (generatedText.startsWith(userMessage)) {
+                generatedText = generatedText.substring(userMessage.length).trim();
             }
+            return generatedText || "Hello! I'm here to chat with you.";
         } else if (data.generated_text) {
             return data.generated_text;
         } else if (data.error) {
-            console.error('API Error:', data.error);
-            return "Sorry, the AI service returned an error: " + data.error;
+            return "Sorry, both AI models are currently unavailable: " + data.error;
         }
         
-        return "Sorry, I didn't get a proper response from the AI.";
+        return "Sorry, I'm having trouble connecting to the AI service right now.";
         
     } catch (error) {
-        console.error('Request failed:', error);
-        throw error;
+        console.error('Fallback request failed:', error);
+        return "Sorry, I'm having trouble connecting to the AI service. Please check your internet connection and try again.";
     }
 }
 
