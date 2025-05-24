@@ -20,27 +20,37 @@ function appendMessage(sender, text) {
 }
 
 async function getAIResponse(userMessage) {
-  const response = await fetch("https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-alpha", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer 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"
-    },
-    body: JSON.stringify({
-      inputs: userMessage
-    })
-  });
+  try {
+    const response = await fetch("https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-alpha", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer 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"
+      },
+      body: JSON.stringify({
+        inputs: userMessage
+      })
+    });
 
-  const data = await response.json();
+    // Log the raw response to debug
+    const rawData = await response.text();
+    console.log("API raw response:", rawData);
 
-  if (Array.isArray(data) && data.length > 0 && data[0].generated_text) {
-    return data[0].generated_text;
-  } else if (data.generated_text) {
-    return data.generated_text;
-  } else if (data.error) {
-    return "Sorry, the model returned an error: " + data.error;
-  } else {
-    return "Sorry, I can't answer that!";
+    // Parse the JSON
+    const data = JSON.parse(rawData);
+
+    // Check possible formats
+    if (data.generated_text) {
+      return data.generated_text;
+    } else if (Array.isArray(data) && data.length > 0 && data[0].generated_text) {
+      return data[0].generated_text;
+    } else if (data.error) {
+      return "Sorry, the model returned an error: " + data.error;
+    } else {
+      return "Sorry, I can't answer that!";
+    }
+  } catch (error) {
+    console.error("Error in getAIResponse:", error);
+    return "Oops! There was a problem contacting the AI service.";
   }
 }
-
