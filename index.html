@@ -1,25 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>My AI Chat</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-    #chat-container { max-width: 600px; margin: 50px auto; padding: 10px; border: 1px solid #ddd; border-radius: 8px; }
-    .message { margin: 10px 0; }
-    .user { color: #007BFF; }
-    .bot { color: #28A745; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chat</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="chat-container">
-    <h3>Chat with AI</h3>
-    <div id="chat-box"></div>
-    <input type="text" id="user-input" placeholder="Type your message..." />
-    <button onclick="sendMessage()">Send</button>
-  </div>
-
-  <script src="chat.js"></script>
+    <div class="container">
+        <header>
+            <h1>AI Chat Assistant</h1>
+            <p>Powered by Hugging Face</p>
+        </header>
+        
+        <div class="chat-container">
+            <div id="messages" class="messages"></div>
+            <div class="input-container">
+                <input type="text" id="messageInput" placeholder="Type your message..." disabled>
+                <button id="sendBtn" disabled>Send</button>
+            </div>
+        </div>
+        
+        <div class="setup-container" id="setupContainer">
+            <div class="setup-box">
+                <h3>Setup Required</h3>
+                <p>Enter your free Hugging Face API token to start chatting:</p>
+                <input type="password" id="apiToken" placeholder="hf_...">
+                <button id="saveToken">Save Token</button>
+                <p class="help-text">
+                    Get your free token at <a href="https://huggingface.co/settings/tokens" target="_blank">huggingface.co/settings/tokens</a>
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
 </body>
 </html>
-
