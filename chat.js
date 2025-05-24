@@ -6,7 +6,6 @@ async function sendMessage() {
   appendMessage('user', message);
   userInput.value = '';
 
-  // Use a fake AI response for demonstration
   const aiResponse = await getAIResponse(message);
   appendMessage('bot', aiResponse);
 }
@@ -21,14 +20,25 @@ function appendMessage(sender, text) {
 }
 
 async function getAIResponse(userMessage) {
-  const response = await fetch("https://api-inference.huggingface.co/models/HuggingFaceH4/starchat-alpha", {
+  const response = await fetch("https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-alpha", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({ inputs: userMessage })
+    body: JSON.stringify({
+      inputs: userMessage
+    })
   });
-  const data = await response.json();
-  return data.generated_text || "Sorry, I can't answer that!";
-}
 
+  const data = await response.json();
+
+  if (Array.isArray(data) && data.length > 0 && data[0].generated_text) {
+    return data[0].generated_text;
+  } else if (data.generated_text) {
+    return data.generated_text;
+  } else if (data.error) {
+    return "Sorry, the model returned an error: " + data.error;
+  } else {
+    return "Sorry, I can't answer that!";
+  }
+}
